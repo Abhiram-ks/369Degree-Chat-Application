@@ -26,12 +26,12 @@ class SplashScreen extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: Center(
                           child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisSize: .min,
                             children: [
                               Image.asset(
                                 AppImage.logo,

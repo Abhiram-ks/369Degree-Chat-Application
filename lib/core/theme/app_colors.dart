@@ -9,6 +9,6 @@ class AppPalette  {
   static const red    = Color.fromARGB(255, 255, 103, 92);
   static const grey   = Colors.grey;
   static const blue   = Color.fromARGB(255, 39, 134, 211);
-  static const hint   = Color.fromARGB(255, 207, 209, 213);
+  static const hint   = Color.fromARGB(255, 223, 225, 227);
   static const trasprent  = Colors.transparent;
 }

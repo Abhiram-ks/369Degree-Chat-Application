@@ -2,23 +2,31 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:webchat/src/presentation/page/chat_window.dart';
+import 'package:webchat/src/presentation/page/select_users.dart';
 import '../../src/presentation/page/chat_tail.dart';
 import '../../src/presentation/page/splash_screen.dart';
 import '../constant/resposive_size.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String selectUsers = '/select_users';
   static const String chatTail = '/chat_tail';
   static const String chatWindow = '/chat_window';
+  
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case selectUsers:
+        return MaterialPageRoute(builder: (_) => const SelectUsers());
       case chatTail:
-        return MaterialPageRoute(builder: (_) => const ChatTail());
+        return MaterialPageRoute(builder: (_) => ChatTail());
       case chatWindow:
-        return CupertinoPageRoute(builder: (_) => const ChatWindow());
+       int userId = settings.arguments as int;
+        return CupertinoPageRoute(builder: (_) =>  ChatWindow(
+          userId: userId,
+        ));
       default:
         return MaterialPageRoute(
           builder:
