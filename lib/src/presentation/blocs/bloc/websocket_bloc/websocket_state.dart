@@ -3,7 +3,7 @@ part of 'websocket_bloc.dart';
 class WebSocketState {
   final WebSocketConnectionStatus connectionStatus;
   final bool isConnected;
-  final Map<int, bool> typingUsers; // Track typing status per userId
+  final Map<int, bool> typingUsers;
 
   WebSocketState({
     this.connectionStatus = WebSocketConnectionStatus.disconnected,

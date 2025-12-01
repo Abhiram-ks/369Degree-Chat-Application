@@ -10,7 +10,7 @@ class MessageLocalDataSource {
   MessageLocalDataSource({DatabaseHelper? dbHelper})
       : _dbHelper = dbHelper ?? DatabaseHelper.instance;
 
-  /// Store a message in the database
+  /// !Store a message in the database
   Future<int> storeMessage(MessageModel message) async {
     final db = await _dbHelper.database;
     final id = await db.insert(
@@ -19,13 +19,13 @@ class MessageLocalDataSource {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     
-    // Notify stream listeners
+    // !Notify stream listeners
     _notifyStreamListeners(message.userId);
     
     return id;
   }
 
-  /// Get all messages for a specific user
+  /// !Get all messages for a specific user
   Future<List<MessageModel>> getMessagesByUserId(int userId) async {
     final db = await _dbHelper.database;
     final maps = await db.query(
@@ -38,11 +38,10 @@ class MessageLocalDataSource {
     return maps.map((map) => MessageModel.fromJson(map)).toList();
   }
 
-  /// Stream of messages for a specific user
+  /// !Stream of messages for a specific user
   Stream<List<MessageModel>> watchMessagesByUserId(int userId) {
     if (!_streamControllers.containsKey(userId)) {
       _streamControllers[userId] = StreamController<List<MessageModel>>.broadcast();
-      // Load initial data
       getMessagesByUserId(userId).then((messages) {
         if (!_streamControllers[userId]!.isClosed) {
           _streamControllers[userId]!.add(messages);
@@ -52,7 +51,7 @@ class MessageLocalDataSource {
     return _streamControllers[userId]!.stream;
   }
 
-  /// Update message status
+  ///! Update message status
   Future<void> updateMessageStatus(int messageId, String status) async {
     final db = await _dbHelper.database;
     await db.update(
@@ -62,7 +61,7 @@ class MessageLocalDataSource {
       whereArgs: [messageId],
     );
     
-    // Find userId from message and notify
+    //!Find userId from message and notify
     final message = await db.query(
       'messages',
       where: 'id = ?',

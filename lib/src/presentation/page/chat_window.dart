@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webchat/core/di/di.dart';
+import 'package:webchat/core/theme/app_colors.dart';
 import 'package:webchat/src/domain/repo/websocket_repo.dart';
 import 'package:webchat/src/presentation/blocs/bloc/get_single_user_bloc/get_single_user_bloc.dart';
 import 'package:webchat/src/presentation/blocs/bloc/websocket_bloc/websocket_bloc.dart';
 import 'package:webchat/src/presentation/blocs/bloc/message_bloc/message_bloc.dart';
 import 'package:webchat/src/presentation/widget/chat_windows_widget/chat_bubles.dart';
 import 'package:webchat/src/presentation/widget/chat_windows_widget/chat_window_text_style.dart';
+import '../../../core/common/custom_snckbar.dart';
 import '../widget/chat_windows_widget/chat_appbar.dart';
 import 'package:webchat/src/presentation/model/chat_message.dart';
 import 'chat_window_logic.dart';
@@ -82,9 +84,8 @@ class _ChatWindowInitializerState extends State<ChatWindowInitializer> {
           listener: (context, wsState) {
             if (!mounted) return;
             
-            // Handle connection status changes
-            if (wsState.connectionStatus == WebSocketConnectionStatus.connected) {
-              debugPrint('✅ WebSocket connected - UI should update');
+            if (wsState.connectionStatus == WebSocketConnectionStatus.disconnected) {
+             CustomSnackBar.show(context, message: 'WebSocket disconnected');
             } else if (wsState.connectionStatus == WebSocketConnectionStatus.error) {
               debugPrint('❌ WebSocket error - UI should show error state');
             }
@@ -125,7 +126,15 @@ class ChatWindowBody extends StatelessWidget {
     return BlocBuilder<MessageBloc, MessageState>(
       builder: (context, msgState) {
         if (msgState is MessageLoading || msgState is MessageInitial) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: SizedBox(
+            height: 15,
+            width: 15,
+            child: CircularProgressIndicator(
+              color: AppPalette.hint,
+              backgroundColor: AppPalette.blue,
+              strokeWidth: 2, 
+            ),
+          ));
         } 
         
         if (msgState is MessageError) {
@@ -133,7 +142,15 @@ class ChatWindowBody extends StatelessWidget {
         }
         
         if (msgState is! MessageLoaded) {
-          return const Center(child: CircularProgressIndicator());
+            return  Center(child: SizedBox(
+            height: 15,
+            width: 15,
+            child: CircularProgressIndicator(
+              color: AppPalette.hint,
+              backgroundColor: AppPalette.blue,
+              strokeWidth: 2, 
+            ),
+          ));
         }
         
         return Column(

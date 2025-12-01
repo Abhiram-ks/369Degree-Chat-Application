@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 
 import '../../api/api_service.dart';
-import '../../api/websocket_service.dart';
+import '../../api/socket/websocket_service.dart';
 import '../../src/data/datasource/local/database_helper.dart';
 import '../../src/data/datasource/local/store_user_local_datasource.dart';
 import '../../src/data/datasource/local/message_local_datasource.dart';

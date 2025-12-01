@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:webchat/src/domain/entity/message_entity.dart';
 import 'package:webchat/src/domain/repo/message_repo.dart';
 import 'package:webchat/src/domain/usecase/message_usecase/store_message_usecase.dart';
 import 'package:webchat/src/presentation/model/chat_message.dart';
-
 part 'message_event.dart';
 part 'message_state.dart';
 
@@ -70,24 +68,20 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     await _storeMessageUsecase.call(senderMessage);
     
     final messages = await _messageRepo.getMessagesByUserId(event.userId);
-    final storedSenderMessage = messages.lastWhere(
+    messages.lastWhere(
       (m) => m.isCurrentUser && 
              m.message == event.message &&
              m.status == MessageStatus.sending,
       orElse: () => messages.where((m) => m.isCurrentUser).last,
     );
     
-    if (storedSenderMessage.id != null) {
-      debugPrint('✅ Sender message ID: ${storedSenderMessage.id}');
-    }
+
 
   }
 
   Future<void> _onMessageReceived(MessageReceived event, Emitter<MessageState> emit) async {
-    debugPrint('📥 MessageReceived event: userId=${event.userId}, message=${event.message}');
     final now = DateTime.now();
     
-    // Check if receiver message already exists (prevent duplicates)
     final currentState = state;
     if (currentState is MessageLoaded) {
       final receiverExists = currentState.messages.any((m) => 
@@ -97,14 +91,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       );
       
       if (receiverExists) {
-        debugPrint('⚠️ Receiver message already exists - skipping duplicate');
         return;
       }
     }
     
-    // Store received message (shows on left side)
-    // When WebSocket echo is received, create receiver side to show message on both sides
-    debugPrint('✅ Creating receiver message (left side)');
     final messageEntity = MessageEntity(
       userId: event.userId,
       message: event.message,
@@ -114,14 +104,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     );
 
     await _storeMessageUsecase.call(messageEntity);
-    debugPrint('✅ Receiver message stored');
   }
 
   Future<void> _onUpdateMessageStatus(UpdateMessageStatus event, Emitter<MessageState> emit) async {
     try {
       await _messageRepo.updateMessageStatus(event.messageId, event.status);
     } catch (e) {
-      debugPrint('❌ Error updating message status: $e');
+      throw Exception('Error updating message status: $e');
     }
   }
 

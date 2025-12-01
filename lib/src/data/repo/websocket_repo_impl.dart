@@ -1,7 +1,6 @@
-import '../../../api/websocket_service.dart';
+import '../../../api/socket/websocket_service.dart';
 import '../../domain/repo/websocket_repo.dart';
 
-/// Implementation of WebSocketRepo that wraps WebSocketService
 class WebSocketRepoImpl implements WebSocketRepo {
   final WebSocketService _webSocketService;
 

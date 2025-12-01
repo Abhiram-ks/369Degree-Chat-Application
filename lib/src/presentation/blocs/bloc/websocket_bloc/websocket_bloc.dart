@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:webchat/api/websocket_service.dart';
+import 'package:webchat/api/socket/websocket_service.dart';
 import 'package:webchat/src/domain/repo/websocket_repo.dart';
 
 part 'websocket_event.dart';
@@ -21,7 +21,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
             isConnected: webSocketService.isConnected,
           ),
         ) {
-    // Register all event handlers first
+    // Register all event handlers FIRST before listening to streams
     on<WebSocketConnect>(_onConnect);
     on<WebSocketDisconnect>(_onDisconnect);
     on<WebSocketSendMessage>(_onSendMessage);
@@ -30,39 +30,30 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     on<WebSocketStatusChanged>(_onStatusChanged);
     on<WebSocketTypingChanged>(_onTypingChanged);
     
-    // Initialize with current WebSocketService status using post-frame callback
+    // Initialize and listen to streams AFTER handlers are registered
     _initializeWithCurrentStatus();
-    
-    // Then start listening to streams after handlers are registered
     _listenToStreams();
   }
   
-  /// Initialize BLoC state with current WebSocketService status
-  /// This ensures the BLoC reflects the actual connection state when recreated
   void _initializeWithCurrentStatus() {
     final currentStatus = _webSocketService.status;
-    final isConnected = _webSocketService.isConnected;
-    
-    // Use addPostFrameCallback to emit after the frame, as emit can't be called directly
-    // from constructor context in BLoC v8+
     Future.microtask(() {
       if (!isClosed) {
         add(WebSocketStatusChanged(status: currentStatus));
+        
+        // Auto-connect if disconnected and not already connecting/connected
+        if (currentStatus == WebSocketConnectionStatus.disconnected ||
+            currentStatus == WebSocketConnectionStatus.error) {
+          debugPrint('🔄 WebSocketBloc: Auto-connecting on initialization...');
+          add(WebSocketConnect());
+        } else if (currentStatus == WebSocketConnectionStatus.connected) {
+          debugPrint('✅ WebSocketBloc: Already connected');
+        }
       }
     });
-    
-    debugPrint('🔄 WebSocketBloc: Initialized with status: $currentStatus (connected: $isConnected)');
-    
-    // If disconnected but should reconnect, trigger reconnection
-    if (currentStatus == WebSocketConnectionStatus.disconnected && 
-        currentStatus != WebSocketConnectionStatus.error) {
-      // Don't auto-connect here, let the UI trigger it via WebSocketConnect event
-      debugPrint('ℹ️ WebSocket is disconnected - waiting for connect event');
-    }
   }
 
   void _listenToStreams() {
-    // Cancel existing subscriptions if any (for hot reload safety)
     _statusSubscription?.cancel();
     _messageSubscription?.cancel();
     _typingSubscription?.cancel();
@@ -73,7 +64,9 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
           add(WebSocketStatusChanged(status: status));
         }
       },
-      onError: (error) => debugPrint('Status stream error: $error'),
+      onError: (error) {
+        debugPrint('⚠️ Status stream error: $error');
+      },
     );
 
     _messageSubscription = _webSocketService.messageStream.listen(
@@ -82,7 +75,9 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
           add(WebSocketMessageReceived(messageData: messageData));
         }
       },
-      onError: (error) => debugPrint('Message stream error: $error'),
+      onError: (error) {
+        debugPrint('⚠️ Message stream error: $error');
+      },
     );
 
     _typingSubscription = _webSocketService.typingStream.listen(
@@ -95,14 +90,25 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
           }
         }
       },
-      onError: (error) => debugPrint('Typing stream error: $error'),
+      onError: (error) {
+        // Log error but don't throw - allow reconnection to handle it
+        debugPrint('⚠️ Typing stream error: $error');
+      },
     );
   }
 
   void _onConnect(WebSocketConnect event, Emitter<WebSocketState> emit) async {
+    // Don't connect if already connected or connecting
+    if (state.isConnected || 
+        state.connectionStatus == WebSocketConnectionStatus.connecting) {
+      debugPrint('ℹ️ WebSocket already connected or connecting, skipping...');
+      return;
+    }
+
     debugPrint('🔌 WebSocketBloc: Connecting...');
     try {
       await _webSocketService.connect(url: event.url);
+      debugPrint('✅ WebSocketBloc: Connection initiated');
     } catch (e) {
       debugPrint('❌ WebSocketBloc: Connection error: $e');
       emit(state.copyWith(
@@ -113,13 +119,11 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   }
 
   void _onDisconnect(WebSocketDisconnect event, Emitter<WebSocketState> emit) async {
-    debugPrint('🔌 WebSocketBloc: Disconnecting...');
     await _webSocketService.disconnect();
   }
 
   void _onSendMessage(WebSocketSendMessage event, Emitter<WebSocketState> emit) {
     if (!state.isConnected) {
-      debugPrint('⚠️ Cannot send message: WebSocket not connected');
       return;
     }
     
@@ -143,17 +147,14 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     // The message data is in event.messageData
     // This handler ensures the event is properly processed
     // Actual message processing is handled by MessageBloc via stream listeners
-    debugPrint('📬 WebSocketBloc: Message received event processed');
   }
 
   void _onStatusChanged(WebSocketStatusChanged event, Emitter<WebSocketState> emit) {
-    debugPrint('🔄 WebSocketBloc: Status changed to ${event.status}');
     final newState = state.copyWith(
       connectionStatus: event.status,
       isConnected: event.status == WebSocketConnectionStatus.connected,
     );
     emit(newState);
-    debugPrint('✅ WebSocketBloc: State emitted - isConnected: ${newState.isConnected}');
   }
 
   void _onTypingChanged(WebSocketTypingChanged event, Emitter<WebSocketState> emit) {
