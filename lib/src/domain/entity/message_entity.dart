@@ -1,4 +1,9 @@
-import '../../presentation/widget/chat_windows_widget/chat_bubles.dart';
+enum MessageStatus {
+  sending,
+  sent,
+  delivered,
+  read,
+}
 
 class MessageEntity {
   final int? id;

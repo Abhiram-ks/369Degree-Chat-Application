@@ -6,7 +6,7 @@ import 'package:webchat/core/constant/app_constants.dart';
 import 'package:webchat/api/socket/websocket_service.dart';
 import 'package:webchat/src/presentation/blocs/bloc/websocket_bloc/websocket_bloc.dart';
 import 'package:webchat/src/presentation/blocs/bloc/message_bloc/message_bloc.dart';
-import '../../domain/entity/message_entity.dart';
+import '../../../domain/entity/message_entity.dart';
 
 class ChatWindowLogic {
   final BuildContext context;

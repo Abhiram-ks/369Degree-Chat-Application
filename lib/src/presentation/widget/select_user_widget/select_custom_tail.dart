@@ -30,9 +30,9 @@ class SelectableUserTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppPalette.white,
           borderRadius: .circular(8),
-          border: Border.all(
-            color: isSelected ? AppPalette.blue : AppPalette.hint,
-            width: isSelected ? 2 : 1,
+          border: .all(
+            color: isSelected ? AppPalette.blue : AppPalette.white,
+            width: 1,
           ),
         ),
         padding: .symmetric(
@@ -59,7 +59,8 @@ class SelectableUserTile extends StatelessWidget {
                 children: [
                   Text(
                     user.fullName,
-                    style: const TextStyle(
+                    style:  TextStyle(
+                      color:isSelected ? AppPalette.blue : AppPalette.black,
                       fontWeight: .bold,
                       fontSize: 14,
                     ),
@@ -81,13 +82,13 @@ class SelectableUserTile extends StatelessWidget {
             ),
             SizedBox(width: horizontalSpacing),
             Container(
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
+                shape: .circle,
+                border: .all(
                   color: isSelected ? AppPalette.blue : AppPalette.grey,
-                  width: 2,
+                  width: 1,
                 ),
                 color: isSelected ? AppPalette.blue : AppPalette.white,
               ),
@@ -95,7 +96,7 @@ class SelectableUserTile extends StatelessWidget {
                   ? const Icon(
                       Icons.check,
                       color: AppPalette.white,
-                      size: 16,
+                      size: 14,
                     )
                   : null,
             ),

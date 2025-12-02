@@ -9,7 +9,7 @@ class CustomSnackBar {
     Color textColor = AppPalette.white,
     Color backgroundColor = Colors.black87,
     int durationSeconds = 2,
-     TextAlign textAlign = TextAlign.left,
+     TextAlign textAlign = TextAlign.center,
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

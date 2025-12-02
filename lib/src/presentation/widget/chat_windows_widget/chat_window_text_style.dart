@@ -1,30 +1,45 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/constant/resposive_size.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class ChatWindowTextFiled extends StatelessWidget {
+class ChatWindowTextFiled extends StatefulWidget {
   const ChatWindowTextFiled({
     super.key,
-    required TextEditingController controller,
+    required this.controller,
     required this.sendButton,
     this.icon,
     this.isICon = true,
     this.onTextChanged,
-  }) : _controller = controller;
+  });
 
-  final TextEditingController _controller;
+  final TextEditingController controller;
   final VoidCallback sendButton;
   final bool isICon;
   final IconData? icon;
   final Function(String)? onTextChanged;
 
   @override
+  State<ChatWindowTextFiled> createState() => _ChatWindowTextFiledState();
+}
+
+class _ChatWindowTextFiledState extends State<ChatWindowTextFiled> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final focusNode = FocusNode();
-
-
     return Column(
       children: [
         Container(
@@ -35,10 +50,13 @@ class ChatWindowTextFiled extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _controller,
-                    focusNode: focusNode,
-                    onChanged: onTextChanged,
-                    onSubmitted: (_) => sendButton(),
+                    controller: widget.controller,
+                    focusNode: _focusNode,
+                    onChanged: widget.onTextChanged,
+                    onSubmitted: (_) {
+                      widget.sendButton();
+                      _focusNode.unfocus();
+                    },
                     decoration: InputDecoration(
                       hintText: "Type a message",
                       border: OutlineInputBorder(
@@ -54,7 +72,10 @@ class ChatWindowTextFiled extends StatelessWidget {
                 ),
                 Constant.width20(context),
                 GestureDetector(
-                  onTap: sendButton,
+                  onTap: () {
+                    _focusNode.unfocus();
+                    widget.sendButton();
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
