@@ -9,18 +9,22 @@ part 'websocket_state.dart';
 
 class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   final WebSocketService _webSocketService;
+  final bool _autoConnect;
   StreamSubscription<WebSocketConnectionStatus>? _statusSubscription;
   StreamSubscription<Map<String, dynamic>>? _messageSubscription;
   StreamSubscription<Map<String, dynamic>>? _typingSubscription;
 
-  WebSocketBloc({required WebSocketService webSocketService})
-    : _webSocketService = webSocketService,
-      super(
-        WebSocketState(
-          connectionStatus: webSocketService.status,
-          isConnected: webSocketService.isConnected,
-        ),
-      ) {
+  WebSocketBloc({
+    required WebSocketService webSocketService,
+    bool autoConnect = true,
+  })  : _webSocketService = webSocketService,
+        _autoConnect = autoConnect,
+        super(
+          WebSocketState(
+            connectionStatus: webSocketService.status,
+            isConnected: webSocketService.isConnected,
+          ),
+        ) {
     on<WebSocketConnect>(_onConnect);
     on<WebSocketDisconnect>(_onDisconnect);
     on<WebSocketSendMessage>(_onSendMessage);
@@ -28,7 +32,9 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     on<WebSocketStatusChanged>(_onStatusChanged);
     on<WebSocketTypingChanged>(_onTypingChanged);
     _listenToStreams();
-    _initializeWithCurrentStatus();
+    if (_autoConnect) {
+      _initializeWithCurrentStatus();
+    }
   }
 
   void _initializeWithCurrentStatus() {

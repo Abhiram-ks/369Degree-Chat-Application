@@ -26,24 +26,34 @@ class ChatWindowBody extends StatelessWidget {
     return BlocBuilder<MessageBloc, MessageState>(
       builder: (context, msgState) {
         if (msgState is MessageLoading || msgState is MessageInitial) {
-          return CustomStateHandleWidgets.loadingWidget();
+          return Container(
+            key: const Key('chat_body_loading_widget'),
+            child: CustomStateHandleWidgets.loadingWidget(),
+          );
         }
 
         if (msgState is MessageError) {
-          return CustomStateHandleWidgets.informationWidget(
-            message: msgState.message,
-            onTap: () {
-              context.read<MessageBloc>().add(LoadMessages(userId: userId));
-            },
+          return Container(
+            key: const Key('chat_body_error_widget'),
+            child: CustomStateHandleWidgets.informationWidget(
+              message: msgState.message,
+              onTap: () {
+                context.read<MessageBloc>().add(LoadMessages(userId: userId));
+              },
+            ),
           );
         }
 
         if (msgState is! MessageLoaded) {
-          return CustomStateHandleWidgets.loadingWidget();
+          return Container(
+            key: const Key('chat_body_loading_widget'),
+            child: CustomStateHandleWidgets.loadingWidget(),
+          );
         }
         final isEmpty = msgState.messages.isEmpty;
 
         return Column(
+          key: const Key('chat_body_content_column'),
           children: [
             Expanded(
               child: isEmpty
@@ -52,6 +62,7 @@ class ChatWindowBody extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Container(
+                          key: const Key('chat_body_empty_message_widget'),
                           width: double.infinity,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -69,13 +80,17 @@ class ChatWindowBody extends StatelessWidget {
                         ),
                       ),
                     )
-                  : MessageList(messages: msgState.messages),
+                  : MessageList(
+                      key: const Key('chat_body_message_list'),
+                      messages: msgState.messages,
+                    ),
             ),
             BlocBuilder<WebSocketBloc, WebSocketState>(
               builder: (context, wsState) {
                 final isTyping = wsState.isTypingForUser(userId);
                 if (isTyping) {
                   return Container(
+                    key: const Key('chat_body_typing_indicator'),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
@@ -96,10 +111,11 @@ class ChatWindowBody extends StatelessWidget {
                     ),
                   );
                 }
-                return const SizedBox.shrink();
+                return const SizedBox.shrink(key: Key('chat_body_typing_hidden'));
               },
             ),
             ChatWindowTextFiled(
+              key: const Key('chat_body_text_field'),
               controller: controller,
               onTextChanged: onTextChanged,
               sendButton: onSendMessage,

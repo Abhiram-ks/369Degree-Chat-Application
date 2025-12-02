@@ -44,6 +44,7 @@ class _ChatWindowInitializerState extends State<ChatWindowInitializer> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
+      key: const Key('chat_window_layout_builder'),
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         return BlocConsumer<WebSocketBloc, WebSocketState>(
@@ -65,11 +66,14 @@ class _ChatWindowInitializerState extends State<ChatWindowInitializer> {
                 }
               },
               child: Scaffold(
+                key: const Key('chat_window_scaffold'),
                 appBar: ChatAppBar(
+                  key: const Key('chat_window_appbar'),
                   userId: widget.userId,
                   screenWidth: screenWidth,
                 ),
                 body: ChatWindowBody(
+                  key: const Key('chat_window_body'),
                   controller: controller,
                   userId: widget.userId,
                   onTextChanged: _logic.onTextChanged,

@@ -21,6 +21,7 @@ class ChatTailBuilderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      key: const Key('chat_tail_refresh_indicator'),
       color: AppPalette.blue,
       backgroundColor: AppPalette.white,
       onRefresh: () async {
@@ -30,23 +31,29 @@ class ChatTailBuilderWidget extends StatelessWidget {
         builder: (context, state) {
           if (state is GetStoreUserSuccess) {
             if (state.users.isEmpty) {
-              return CustomStateHandleWidgets.informationWidget(
-                message: 'No users found',
-                onTap: () {
-                  context.read<GetStoreUserBloc>().add(GetStoreUserRequest(selectedUserId: AppConstants.selectedUserId));
-                },
+              return Container(
+                key: const Key('no_users_found_widget'),
+                child: CustomStateHandleWidgets.informationWidget(
+                  message: 'No users found',
+                  onTap: () {
+                    context.read<GetStoreUserBloc>().add(GetStoreUserRequest(selectedUserId: AppConstants.selectedUserId));
+                  },
+                ),
               );
             }
             return ListView.separated(
+              key: const Key('users_list_view'),
               itemCount: state.users.length,
               itemBuilder: (context, index) {
                 final UserEntity user = state.users[index];
                 return GestureDetector(
+                  key: Key('user_tile_gesture_${user.id}'),
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.chatWindow, arguments: user.id);
                   },
                   child: ChatTile(
-                  user: user,
+                    key: Key('chat_tile_${user.id}'),
+                    user: user,
                 ));
               },
               separatorBuilder: (context, index) {
@@ -54,16 +61,22 @@ class ChatTailBuilderWidget extends StatelessWidget {
               },
             );
           } else if (state is GetStoreUserLoading) {
-            return CustomStateHandleWidgets.loadingWidget();
+            return Container(
+              key: const Key('loading_widget'),
+              child: CustomStateHandleWidgets.loadingWidget(),
+            );
           } else if (state is GetStoreUserFailure) {
-            return CustomStateHandleWidgets.informationWidget(
-              message: state.message,
-              onTap: () {
-                context.read<GetStoreUserBloc>().add(GetStoreUserRequest(selectedUserId: AppConstants.selectedUserId));
-              },
+            return Container(
+              key: const Key('error_widget'),
+              child: CustomStateHandleWidgets.informationWidget(
+                message: state.message,
+                onTap: () {
+                  context.read<GetStoreUserBloc>().add(GetStoreUserRequest(selectedUserId: AppConstants.selectedUserId));
+                },
+              ),
             );
           }
-          return const SizedBox();
+          return const SizedBox(key: Key('initial_empty_widget'));
         },
       ),
     );

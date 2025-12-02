@@ -28,13 +28,16 @@ class _ChatTailState extends State<ChatTail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('chat_tail_scaffold'),
       appBar: CustomAppBar(
+        key: const Key('chat_tail_appbar'),
         isTitle: true,
         title: 'Chat Application',
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: UserAvatarWidget(
+              key: const Key('user_avatar_widget'), //! For testing
               radius: 18,
               onTap: () {
                 CustomCupertinoDialog.show(context: context, title: 'Current User', message:"This is your current user Profile. You can change or switch to a different user by selecting the user from the list.", text: 'Got It', color: AppPalette.blue);
@@ -43,7 +46,7 @@ class _ChatTailState extends State<ChatTail> {
           ),
         ],
       ),
-      body: ChatTailBuilderWidget(),
+      body: const ChatTailBuilderWidget(key: Key('chat_tail_builder')),
     );
   }
 }

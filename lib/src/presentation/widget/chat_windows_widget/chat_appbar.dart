@@ -34,6 +34,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           final UserEntity user = state.user;
 
           return AppBar(
+            key: const Key('chat_appbar_success'),
             backgroundColor: AppPalette.white,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: true,
@@ -43,6 +44,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             titleSpacing: 0,
             iconTheme: const IconThemeData(color: AppPalette.black),
             leading: IconButton(
+              key: const Key('chat_appbar_back_button'),
               icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
             ),
@@ -51,9 +53,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                 final connectionStatus = wsState.connectionStatus;
                 final isOnline =  connectionStatus == WebSocketConnectionStatus.connected;
                 return GestureDetector(
+                  key: const Key('chat_appbar_user_info'),
                   child: Row(
                     children: [
                       Container(
+                        key: const Key('chat_appbar_avatar_container'),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
@@ -66,6 +70,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: SizedBox(
+                                key: const Key('chat_appbar_avatar_image'),
                                 width: 40,
                                 height: 40,
                                 child: imageshow(
@@ -78,6 +83,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                                   bottom: 0,
                                   right: 0,
                                   child: Container(
+                                    key: const Key('chat_appbar_online_indicator'),
                                     width: 12,
                                     height: 12,
                                     decoration: BoxDecoration(
@@ -102,6 +108,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                           children: [
                             Text(
                               user.fullName,
+                              key: const Key('chat_appbar_user_name'),
                               style: TextStyle(
                                 fontWeight: .w600,
                                 fontSize: 16,
@@ -119,6 +126,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 if (isTyping) {
                                   return Text(
                                     'typing...',
+                                    key: const Key('chat_appbar_typing_indicator'),
                                     style: TextStyle(
                                       fontSize: screenWidth * 0.03,
                                       color: AppPalette.green,
@@ -131,8 +139,10 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 final isOnline = connectionStatus ==  WebSocketConnectionStatus.connected;
 
                                 return Row(
+                                  key: const Key('chat_appbar_status_row'),
                                   children: [
                                     Container(
+                                      key: const Key('chat_appbar_status_dot'),
                                       width: 8,
                                       height: 8,
                                       decoration: BoxDecoration(
@@ -145,6 +155,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     const SizedBox(width: 6),
                                     Text(
                                       isOnline ? 'Online' : 'Offline',
+                                      key: const Key('chat_appbar_status_text'),
                                       style: TextStyle(
                                         fontSize: screenWidth * 0.03,
                                         color: isOnline
@@ -167,7 +178,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           );
         }
-        return CustomAppBar(title: 'Current User', isTitle: true);
+        return CustomAppBar(
+          key: const Key('chat_appbar_loading'),
+          title: 'Current User',
+          isTitle: true,
+        );
       },
     );
   }
