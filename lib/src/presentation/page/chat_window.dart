@@ -20,7 +20,9 @@ class ChatWindow extends StatelessWidget {
               sl<GetSingleUserBloc>()
                 ..add(GetSingleUserRequest(userId: userId)),
         ),
-        BlocProvider(create: (context) => sl<WebSocketBloc>()),
+        BlocProvider.value(
+          value: sl<WebSocketBloc>(),
+        ),
         BlocProvider(create: (context) => sl<MessageBloc>()),
       ],
       child: ChatWindowInitializer(userId: userId),

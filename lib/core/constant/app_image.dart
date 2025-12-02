@@ -1,4 +1,4 @@
 class AppImage {
-  static const String logo = 'assets/app_logo.jpg';
-  static const String defaultImage = 'assets/no_user.jpg';
+  static const String logo = 'assets/app_logo.png';
+  static const String defaultImage = 'assets/no_user.png';
 }

@@ -131,7 +131,7 @@ Future<void> init() async {
   );
 
   //! Register WebSocket and Message Blocs
-  sl.registerFactory<WebSocketBloc>(
+  sl.registerLazySingleton<WebSocketBloc>(
     () => WebSocketBloc(
       webSocketService: sl<WebSocketService>(),
     ),

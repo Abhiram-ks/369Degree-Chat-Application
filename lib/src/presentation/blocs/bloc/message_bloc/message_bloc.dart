@@ -66,17 +66,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     );
 
     await _storeMessageUsecase.call(senderMessage);
-    
-    final messages = await _messageRepo.getMessagesByUserId(event.userId);
-    messages.lastWhere(
-      (m) => m.isCurrentUser && 
-             m.message == event.message &&
-             m.status == MessageStatus.sending,
-      orElse: () => messages.where((m) => m.isCurrentUser).last,
-    );
-    
-
-
   }
 
   Future<void> _onMessageReceived(MessageReceived event, Emitter<MessageState> emit) async {

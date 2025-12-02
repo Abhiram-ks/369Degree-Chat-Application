@@ -122,62 +122,73 @@ class ChatWindowLogic {
 
   void onTextChanged(String text) {
     final webSocketBloc = context.read<WebSocketBloc>();
-    if (!webSocketBloc.state.isConnected) return;
+    if (webSocketBloc.isClosed || !webSocketBloc.state.isConnected) return;
 
     final trimmedText = text.trim();
 
     if (trimmedText.isNotEmpty) {
-      webSocketBloc.add(WebSocketSendTyping(isTyping: true, userId: userId));
+      if (!webSocketBloc.isClosed) {
+        webSocketBloc.add(WebSocketSendTyping(isTyping: true, userId: userId));
+      }
       _typingTimer?.cancel();
       _typingTimer = Timer(const Duration(milliseconds: 500), () {
-        if (webSocketBloc.state.isConnected) {
+        if (!webSocketBloc.isClosed && webSocketBloc.state.isConnected) {
           webSocketBloc.add(WebSocketSendTyping(isTyping: false, userId: userId));
         }
       });
     } else {
       _typingTimer?.cancel();
-      if (webSocketBloc.state.isConnected) {
+      if (!webSocketBloc.isClosed && webSocketBloc.state.isConnected) {
         webSocketBloc.add(WebSocketSendTyping(isTyping: false, userId: userId));
       }
     }
   }
 
-  void onSendMessage() {
+  void onSendMessage() async {
     final text = controller.text.trim();
     if (text.isEmpty) return;
 
     final webSocketBloc = context.read<WebSocketBloc>();
     final messageBloc = context.read<MessageBloc>();
 
-    if (!webSocketBloc.state.isConnected) {
+    if (webSocketBloc.isClosed || !webSocketBloc.state.isConnected) {
       return;
     }
 
     controller.clear();
     _typingTimer?.cancel();
-    webSocketBloc.add(WebSocketSendTyping(isTyping: false, userId: userId));
-    messageBloc.add(SendMessage(userId: userId, message: text));
-    Future.delayed(const Duration(milliseconds: 40), () {
-      final msgState = messageBloc.state;
-      if (msgState is MessageLoaded) {
-        final messagesToSend = msgState.messages
-            .where((m) => m.isCurrentUser &&
-                   m.message == text &&
-                   m.status == MessageStatus.sending)
-            .toList();
+    
+    if (!webSocketBloc.isClosed) {
+      webSocketBloc.add(WebSocketSendTyping(isTyping: false, userId: userId));
+    }
+    
+    if (!messageBloc.isClosed) {
+      messageBloc.add(SendMessage(userId: userId, message: text));
+    }
+    
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    final msgState = messageBloc.state;
+    if (msgState is MessageLoaded && 
+        !webSocketBloc.isClosed && 
+        webSocketBloc.state.isConnected) {
+      final messagesToSend = msgState.messages.where((m) => 
+        m.isCurrentUser &&
+        m.message == text &&
+        m.status == MessageStatus.sending
+      ).toList();
 
-        if (messagesToSend.isNotEmpty && webSocketBloc.state.isConnected) {
-          final messageToSend = messagesToSend.last;
-          webSocketBloc.add(
-            WebSocketSendMessage(
-              message: text,
-              userId: userId,
-              messageId: messageToSend.id,
-            ),
-          );
-        }
+      if (messagesToSend.isNotEmpty) {
+        final messageToSend = messagesToSend.last;
+        webSocketBloc.add(
+          WebSocketSendMessage(
+            message: text,
+            userId: userId,
+            messageId: messageToSend.id,
+          ),
+        );
       }
-    });
+    }
   }
 
   void dispose() {

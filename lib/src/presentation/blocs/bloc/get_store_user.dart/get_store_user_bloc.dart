@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ class GetStoreUserBloc extends Bloc<GetStoreUserEvent, GetStoreUserState> {
             final filteredUsers = localUsers
                 .where((user) => user.id != event.selectedUserId)
                 .toList();
-                log('filteredUsers: ${filteredUsers.length}');
             emit(GetStoreUserSuccess(users: filteredUsers));
           } else {
             emit(GetStoreUserSuccess(users: localUsers));
@@ -55,7 +53,6 @@ class GetStoreUserBloc extends Bloc<GetStoreUserEvent, GetStoreUserState> {
               final filteredUsers = remoteUsers
                   .where((user) => user.id != event.selectedUserId)
                   .toList();
-              log('filteredUsers: ${filteredUsers.length}');
               emit(GetStoreUserSuccess(users: filteredUsers));
             } else {
               emit(GetStoreUserSuccess(users: remoteUsers));

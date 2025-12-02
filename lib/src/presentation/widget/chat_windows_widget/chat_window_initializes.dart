@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webchat/core/common/custom_snckbar.dart';
@@ -7,7 +6,6 @@ import 'package:webchat/src/presentation/widget/chat_windows_widget/chat_appbar.
 import '../../../domain/repo/websocket_repo.dart';
 import 'chat_window_body_widget.dart';
 import 'chat_window_logic.dart';
-
 
 class ChatWindowInitializer extends StatefulWidget {
   final int userId;
@@ -53,7 +51,6 @@ class _ChatWindowInitializerState extends State<ChatWindowInitializer> {
 
             if (wsState.connectionStatus == WebSocketConnectionStatus.disconnected) {
               CustomSnackBar.show(context, message: 'WebSocket disconnected');
-            } else if (wsState.connectionStatus == WebSocketConnectionStatus.error) {
             }
           },
           builder: (context, wsState) {

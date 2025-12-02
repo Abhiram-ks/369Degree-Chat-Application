@@ -33,6 +33,11 @@ class UserAvatarWidget extends StatelessWidget {
                 radius: radius ?? 20,
                 backgroundImage: state.user.avatarUrl.isNotEmpty
                     ? NetworkImage(state.user.avatarUrl)
+                    : const AssetImage(AppImage.defaultImage) as ImageProvider,
+                onBackgroundImageError: state.user.avatarUrl.isNotEmpty
+                      ? (exception, stackTrace) {
+                          debugPrint('Image loading error: $exception');
+                      }
                     : null,
                 child: state.user.avatarUrl.isEmpty
                     ? _buildDefaultAvatarContent()
