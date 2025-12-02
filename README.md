@@ -25,10 +25,8 @@ Testing Source: https://docs.flutter.dev/cookbook/testing
 - Coverage for API calls, database logic, BLoC states, and UI behavior
 
 # Data Flow : 
-┌─────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                       │
-│  (UI Components, BLoC/Cubit, Pages, Widgets)                │
-└──────────────────────────┬──────────────────────────────────┘
+
+                   PRESENTATION LAYER    (UI Components, BLoC/Cubit, Pages, Widgets)                
                            │
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -47,4 +45,5 @@ Testing Source: https://docs.flutter.dev/cookbook/testing
 
 # Tools & Technologies : 
 Flutter, Dart, Clean Architecture, SOLID Principles, BLoC/Cubit State Management, Dio (HTTP Client), WebSocket (Echo Server / Event-based Communication), REST API (Mocki.io), Local Database (SQFlite/SQLite), Image Caching, and Unit, Widget, and Integration Testing.
+
 
