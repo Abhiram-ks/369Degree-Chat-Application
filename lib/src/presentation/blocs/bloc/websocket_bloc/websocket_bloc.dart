@@ -40,10 +40,10 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     }
     if (currentStatus == WebSocketConnectionStatus.disconnected ||
         currentStatus == WebSocketConnectionStatus.error) {
-      debugPrint('🔄 WebSocketBloc: Auto-connecting on initialization...');
+      debugPrint('WebSocketBloc: Auto-connecting on initialization...');
       add(WebSocketConnect());
     } else if (currentStatus == WebSocketConnectionStatus.connected) {
-      debugPrint('✅ WebSocketBloc: Already connected');
+      debugPrint('WebSocketBloc: Already connected');
     }
   }
 
@@ -59,17 +59,15 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
         }
       },
       onError: (error) {
-        debugPrint('⚠️ Status stream error: $error');
+        debugPrint('Status stream error: $error');
       },
     );
 
     _messageSubscription = _webSocketService.messageStream.listen(
       (messageData) {
-        // Messages are handled directly by MessageBloc via stream listeners
-        // No need to dispatch events here
       },
       onError: (error) {
-        debugPrint('⚠️ Message stream error: $error');
+        debugPrint('Message stream error: $error');
       },
     );
 
@@ -84,7 +82,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
         }
       },
       onError: (error) {
-        debugPrint('⚠️ Typing stream error: $error');
+        debugPrint('Typing stream error: $error');
       },
     );
   }
@@ -92,7 +90,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   void _onConnect(WebSocketConnect event, Emitter<WebSocketState> emit) async {
     if (state.isConnected ||
         state.connectionStatus == WebSocketConnectionStatus.connecting) {
-      debugPrint('ℹ️ WebSocket already connected or connecting, skipping...');
+      debugPrint('WebSocket already connected or connecting, skipping...');
       return;
     }
 
@@ -103,12 +101,12 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       ),
     );
 
-    debugPrint('🔌 WebSocketBloc: Connecting...');
+    debugPrint('WebSocketBloc: Connecting...');
     try {
       await _webSocketService.connect(url: event.url);
-      debugPrint('✅ WebSocketBloc: Connection initiated');
+      debugPrint('WebSocketBloc: Connection initiated');
     } catch (e) {
-      debugPrint('❌ WebSocketBloc: Connection error: $e');
+      debugPrint('WebSocketBloc: Connection error: $e');
       emit(
         state.copyWith(
           connectionStatus: WebSocketConnectionStatus.error,

@@ -59,10 +59,10 @@ class BaseWebSocketService {
 
     _shouldReconnect = true;
     _reconnectAttempts = 0;
-    await _connect();
+    await _connectEvent();
   }
 
-  Future<void> _connect() async {
+  Future<void> _connectEvent() async {
     if (_url == null || _url!.isEmpty) {
       _onError(WebSocketException.invalidUrl());
       return;
@@ -138,7 +138,7 @@ class BaseWebSocketService {
       if (_shouldReconnect &&
           (_status == WebSocketConnectionStatus.disconnected ||
               _status == WebSocketConnectionStatus.error)) {
-        _connect();
+        _connectEvent();
       }
     });
   }

@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:webchat/src/domain/entity/message_entity.dart';
 import 'package:webchat/src/domain/repo/message_repo.dart';
 import 'package:webchat/src/domain/usecase/message_usecase/store_message_usecase.dart';
-import 'package:webchat/src/presentation/model/chat_message.dart';
+import 'package:webchat/src/presentation/widget/chat_windows_widget/chat_message.dart';
 part 'message_event.dart';
 part 'message_state.dart';
 
@@ -35,7 +35,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
 
     emit(MessageLoading());
-    
+
     try {
       final initialMessages = await _messageRepo.getMessagesByUserId(event.userId);
       final chatMessages = initialMessages.map((m) => _entityToChatMessage(m)).toList();
@@ -62,7 +62,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       message: event.message,
       date: now,
       isCurrentUser: true,
-      status: MessageStatus.sending, 
+      status: MessageStatus.sending,
     );
 
     await _storeMessageUsecase.call(senderMessage);

@@ -44,7 +44,6 @@ class MessageModel extends MessageEntity {
   }
 
   static MessageStatus _parseStatus(String statusStr) {
-    // Handle both enum string format and simple string
     final cleanStatus = statusStr.replaceAll('MessageStatus.', '').toLowerCase();
     switch (cleanStatus) {
       case 'sending':

@@ -43,16 +43,18 @@ class MessageBubleWidget extends StatelessWidget {
             semanticLabel: 'Sent',
           );
         case MessageStatus.delivered:
-        
-        case MessageStatus.read:
-
           return Icon(
             Icons.done_all,
             size: 14,
-            color: status == MessageStatus.read
-                ? Colors.blueAccent
-                : textColor.withValues(alpha: 0.7),
-            semanticLabel: status == MessageStatus.read ? 'Read' : 'Delivered',
+            color: textColor.withValues(alpha: 0.7),
+            semanticLabel: 'Delivered',
+          );
+        case MessageStatus.read:
+          return Icon(
+            Icons.done_all,
+            size: 14,
+            color: Colors.blueAccent,
+            semanticLabel: 'Read',
           );
       }
     }

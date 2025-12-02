@@ -53,10 +53,6 @@ class _ChatWindowInitializerState extends State<ChatWindowInitializer> {
             if (wsState.connectionStatus == WebSocketConnectionStatus.disconnected) {
               CustomSnackBar.show(context, message: 'WebSocket disconnected');
             } else if (wsState.connectionStatus == WebSocketConnectionStatus.error) {
-              CustomSnackBar.show(
-                context,
-                message:'WebSocket error: ${wsState.connectionStatus.toString()}',
-              );
             }
           },
           builder: (context, wsState) {

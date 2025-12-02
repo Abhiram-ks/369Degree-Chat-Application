@@ -8,7 +8,7 @@ class StoreUserLocalDataSource {
   StoreUserLocalDataSource({DatabaseHelper? dbHelper})
       : _dbHelper = dbHelper ?? DatabaseHelper.instance;
 
-  /// Store a single user in the database
+
   ///! If user with same id exists, it will be replaced
   Future<void> storeUser(UserModel user) async {
     final db = await _dbHelper.database;
@@ -20,7 +20,7 @@ class StoreUserLocalDataSource {
   }
 
 
-  /// Store multiple users in the database
+
   /// !If users with same id exist, they will be replaced
   Future<void> storeUsers(List<UserModel> users) async {
     final db = await _dbHelper.database;

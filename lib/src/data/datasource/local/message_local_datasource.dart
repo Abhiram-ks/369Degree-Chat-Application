@@ -40,13 +40,11 @@ class MessageLocalDataSource {
 
   /// !Stream of messages for a specific user
   Stream<List<MessageModel>> watchMessagesByUserId(int userId) {
-    // Always ensure we have a controller and load initial data
     if (!_streamControllers.containsKey(userId) || 
         _streamControllers[userId]!.isClosed) {
       _streamControllers[userId] = StreamController<List<MessageModel>>.broadcast();
     }
     
-    // Always load and emit initial data from database
     getMessagesByUserId(userId).then((messages) {
       if (_streamControllers.containsKey(userId) && 
           !_streamControllers[userId]!.isClosed) {

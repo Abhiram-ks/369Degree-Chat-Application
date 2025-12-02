@@ -87,8 +87,9 @@ class ChatWindowLogic {
           orElse: () => msgState.messages.first,
         );
         
-        if (sendingMessage.status == MessageStatus.sending || 
-            sendingMessage.status == MessageStatus.sent) {
+        if ((sendingMessage.status == MessageStatus.sending || 
+             sendingMessage.status == MessageStatus.sent) &&
+            sendingMessage.isCurrentUser) {
           final dbMessageId = int.tryParse(sendingMessage.id);
           if (dbMessageId != null) {
             messageBloc.add(
@@ -100,7 +101,7 @@ class ChatWindowLogic {
           }
         }
         
-       
+
         final receiverExists = msgState.messages.any((m) => 
           !m.isCurrentUser && 
           m.message == message &&

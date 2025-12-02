@@ -1,4 +1,7 @@
 import '../../../../api/api_service.dart';
+import '../../../../core/error/api_exceptions.dart';
+import '../../../../core/error/error_handler.dart';
+import '../../../../core/error/app_exceptions.dart';
 import '../../model/user_model.dart';
 
 class GetUsersRemoteDataSource {
@@ -15,10 +18,15 @@ class GetUsersRemoteDataSource {
         final usersData = response.data['users'] as List;
         return usersData.map((user) => UserModel.fromJson(user)).toList();
       } else {
-        throw Exception('Failed to load users: ${response.statusCode}');
+         throw ApiException.fromStatusCode(
+          response.statusCode ?? 0,
+          responseData: response.data,
+        );
       }
+    } on AppException {
+      rethrow;
     } catch (e) {
-      throw Exception('Error fetching users: $e');
+      throw ErrorHandler.handleApiError(e);
     }
   }
 }

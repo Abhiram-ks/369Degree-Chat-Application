@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:webchat/src/domain/repo/websocket_repo.dart';
 
 import '../../../../core/constant/resposive_size.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../blocs/bloc/websocket_bloc/websocket_bloc.dart';
 
 class ChatWindowTextFiled extends StatefulWidget {
   const ChatWindowTextFiled({
@@ -71,19 +74,31 @@ class _ChatWindowTextFiledState extends State<ChatWindowTextFiled> {
                   ),
                 ),
                 Constant.width20(context),
-                GestureDetector(
-                  onTap: () {
-                    _focusNode.unfocus();
-                    widget.sendButton();
+                BlocBuilder<WebSocketBloc, WebSocketState>(
+                  builder: (context, wsState) {
+                    final isDisconnectedOrError = 
+                        wsState.connectionStatus == WebSocketConnectionStatus.disconnected ||
+                        wsState.connectionStatus == WebSocketConnectionStatus.error;
+                    
+                    final buttonColor = isDisconnectedOrError 
+                        ? Colors.grey 
+                        : AppPalette.blue;
+                    
+                    return GestureDetector(
+                      onTap: () {
+                        _focusNode.unfocus();
+                        widget.sendButton();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.send, color: AppPalette.white),
+                      ),
+                    );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: AppPalette.blue,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.send, color: AppPalette.white),
-                  ),
                 ),
               ],
             ),
