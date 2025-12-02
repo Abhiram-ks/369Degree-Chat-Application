@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:webchat/core/error/error_handler.dart';
 
 class ApiService {
   static const String baseUrl = 'https://mocki.io/v1/';
@@ -26,8 +27,6 @@ class ApiService {
       ),
     );
   }
-  
-
 
   Future<Response> get(
     String path, {
@@ -41,8 +40,9 @@ class ApiService {
         options: options,
       );
       return response;
-    } on DioException catch (e) {
-      throw e.response?.data ?? 'An unknown error occurred';
+    } catch (e) {
+      final exception = ErrorHandler.handleApiError(e);
+      throw exception;
     }
   }
 }

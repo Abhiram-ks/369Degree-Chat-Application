@@ -1,10 +1,4 @@
-/// Message status enumeration
-enum MessageStatus {
-  sending,
-  sent,
-  delivered,
-  read,
-}
+import '../../presentation/widget/chat_windows_widget/chat_bubles.dart';
 
 class MessageEntity {
   final int? id;

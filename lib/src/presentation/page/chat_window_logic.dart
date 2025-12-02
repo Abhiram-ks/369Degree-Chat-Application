@@ -119,7 +119,6 @@ class ChatWindowLogic {
     } 
   }
 
-  /// Handle text input changes - send typing indicator
   void onTextChanged(String text) {
     final webSocketBloc = context.read<WebSocketBloc>();
     if (!webSocketBloc.state.isConnected) return;
@@ -129,7 +128,7 @@ class ChatWindowLogic {
     if (trimmedText.isNotEmpty) {
       webSocketBloc.add(WebSocketSendTyping(isTyping: true, userId: userId));
       _typingTimer?.cancel();
-      _typingTimer = Timer(const Duration(seconds: 1), () {
+      _typingTimer = Timer(const Duration(milliseconds: 500), () {
         if (webSocketBloc.state.isConnected) {
           webSocketBloc.add(WebSocketSendTyping(isTyping: false, userId: userId));
         }
@@ -185,4 +184,3 @@ class ChatWindowLogic {
     _webSocketMessageSubscription?.cancel();
   }
 }
-

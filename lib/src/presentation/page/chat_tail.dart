@@ -39,7 +39,6 @@ class _ChatTailState extends State<ChatTail> {
             child: UserAvatarWidget(
               radius: 18,
               onTap: () {
-                // Add any action when avatar is tapped
               },
             ),
           ),

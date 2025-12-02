@@ -14,43 +14,37 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   StreamSubscription<Map<String, dynamic>>? _typingSubscription;
 
   WebSocketBloc({required WebSocketService webSocketService})
-      : _webSocketService = webSocketService,
-        super(
-          WebSocketState(
-            connectionStatus: webSocketService.status,
-            isConnected: webSocketService.isConnected,
-          ),
-        ) {
-    // Register all event handlers FIRST before listening to streams
+    : _webSocketService = webSocketService,
+      super(
+        WebSocketState(
+          connectionStatus: webSocketService.status,
+          isConnected: webSocketService.isConnected,
+        ),
+      ) {
     on<WebSocketConnect>(_onConnect);
     on<WebSocketDisconnect>(_onDisconnect);
     on<WebSocketSendMessage>(_onSendMessage);
     on<WebSocketSendTyping>(_onSendTyping);
-    on<WebSocketMessageReceived>(_onMessageReceived);
     on<WebSocketStatusChanged>(_onStatusChanged);
     on<WebSocketTypingChanged>(_onTypingChanged);
-    
-    // Initialize and listen to streams AFTER handlers are registered
-    _initializeWithCurrentStatus();
     _listenToStreams();
+    _initializeWithCurrentStatus();
   }
-  
+
   void _initializeWithCurrentStatus() {
     final currentStatus = _webSocketService.status;
-    Future.microtask(() {
-      if (!isClosed) {
-        add(WebSocketStatusChanged(status: currentStatus));
-        
-        // Auto-connect if disconnected and not already connecting/connected
-        if (currentStatus == WebSocketConnectionStatus.disconnected ||
-            currentStatus == WebSocketConnectionStatus.error) {
-          debugPrint('🔄 WebSocketBloc: Auto-connecting on initialization...');
-          add(WebSocketConnect());
-        } else if (currentStatus == WebSocketConnectionStatus.connected) {
-          debugPrint('✅ WebSocketBloc: Already connected');
-        }
-      }
-    });
+    final currentIsConnected = _webSocketService.isConnected;
+    if (state.connectionStatus != currentStatus ||
+        state.isConnected != currentIsConnected) {
+      add(WebSocketStatusChanged(status: currentStatus));
+    }
+    if (currentStatus == WebSocketConnectionStatus.disconnected ||
+        currentStatus == WebSocketConnectionStatus.error) {
+      debugPrint('🔄 WebSocketBloc: Auto-connecting on initialization...');
+      add(WebSocketConnect());
+    } else if (currentStatus == WebSocketConnectionStatus.connected) {
+      debugPrint('✅ WebSocketBloc: Already connected');
+    }
   }
 
   void _listenToStreams() {
@@ -71,9 +65,8 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
 
     _messageSubscription = _webSocketService.messageStream.listen(
       (messageData) {
-        if (!isClosed) {
-          add(WebSocketMessageReceived(messageData: messageData));
-        }
+        // Messages are handled directly by MessageBloc via stream listeners
+        // No need to dispatch events here
       },
       onError: (error) {
         debugPrint('⚠️ Message stream error: $error');
@@ -91,19 +84,24 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
         }
       },
       onError: (error) {
-        // Log error but don't throw - allow reconnection to handle it
         debugPrint('⚠️ Typing stream error: $error');
       },
     );
   }
 
   void _onConnect(WebSocketConnect event, Emitter<WebSocketState> emit) async {
-    // Don't connect if already connected or connecting
-    if (state.isConnected || 
+    if (state.isConnected ||
         state.connectionStatus == WebSocketConnectionStatus.connecting) {
       debugPrint('ℹ️ WebSocket already connected or connecting, skipping...');
       return;
     }
+
+    emit(
+      state.copyWith(
+        connectionStatus: WebSocketConnectionStatus.connecting,
+        isConnected: false,
+      ),
+    );
 
     debugPrint('🔌 WebSocketBloc: Connecting...');
     try {
@@ -111,22 +109,30 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       debugPrint('✅ WebSocketBloc: Connection initiated');
     } catch (e) {
       debugPrint('❌ WebSocketBloc: Connection error: $e');
-      emit(state.copyWith(
-        connectionStatus: WebSocketConnectionStatus.error,
-        isConnected: false,
-      ));
+      emit(
+        state.copyWith(
+          connectionStatus: WebSocketConnectionStatus.error,
+          isConnected: false,
+        ),
+      );
     }
   }
 
-  void _onDisconnect(WebSocketDisconnect event, Emitter<WebSocketState> emit) async {
+  void _onDisconnect(
+    WebSocketDisconnect event,
+    Emitter<WebSocketState> emit,
+  ) async {
     await _webSocketService.disconnect();
   }
 
-  void _onSendMessage(WebSocketSendMessage event, Emitter<WebSocketState> emit) {
+  void _onSendMessage(
+    WebSocketSendMessage event,
+    Emitter<WebSocketState> emit,
+  ) {
     if (!state.isConnected) {
       return;
     }
-    
+
     _webSocketService.sendMessage(
       event.message,
       userId: event.userId,
@@ -138,26 +144,31 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     if (!state.isConnected) {
       return;
     }
-    
+
     _webSocketService.sendTypingIndicator(event.isTyping, userId: event.userId);
   }
 
-  void _onMessageReceived(WebSocketMessageReceived event, Emitter<WebSocketState> emit) {
-    // Message received event handler
-    // The message data is in event.messageData
-    // This handler ensures the event is properly processed
-    // Actual message processing is handled by MessageBloc via stream listeners
+
+  void _onStatusChanged(
+    WebSocketStatusChanged event,
+    Emitter<WebSocketState> emit,
+  ) {
+    if (state.connectionStatus != event.status) {
+      final newIsConnected =
+          event.status == WebSocketConnectionStatus.connected;
+      emit(
+        state.copyWith(
+          connectionStatus: event.status,
+          isConnected: newIsConnected,
+        ),
+      );
+    }
   }
 
-  void _onStatusChanged(WebSocketStatusChanged event, Emitter<WebSocketState> emit) {
-    final newState = state.copyWith(
-      connectionStatus: event.status,
-      isConnected: event.status == WebSocketConnectionStatus.connected,
-    );
-    emit(newState);
-  }
-
-  void _onTypingChanged(WebSocketTypingChanged event, Emitter<WebSocketState> emit) {
+  void _onTypingChanged(
+    WebSocketTypingChanged event,
+    Emitter<WebSocketState> emit,
+  ) {
     final updatedTypingUsers = Map<int, bool>.from(state.typingUsers);
     if (event.isTyping) {
       updatedTypingUsers[event.userId] = true;
@@ -175,4 +186,3 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     return super.close();
   }
 }
-

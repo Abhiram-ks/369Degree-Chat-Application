@@ -43,9 +43,9 @@ class MessageBubleWidget extends StatelessWidget {
             semanticLabel: 'Sent',
           );
         case MessageStatus.delivered:
+        
         case MessageStatus.read:
-          // Double tick (✓✓) - WhatsApp style
-          // Blue for read, white/gray for delivered
+
           return Icon(
             Icons.done_all,
             size: 14,

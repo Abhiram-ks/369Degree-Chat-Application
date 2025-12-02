@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:webchat/src/domain/repo/websocket_repo.dart';
+import 'package:webchat/core/error/error_handler.dart';
 
-/// Base WebSocket service - Core connection functionality
-/// Handles: connect, disconnect, message streams, reconnection
+import '../../../core/error/web_socket_exeption.dart';
+
+/// !Base WebSocket service - Core connection functionality
+/// !Handles: connect, disconnect, message streams, reconnection
 class BaseWebSocketService {
   WebSocketChannel? _channel;
   StreamSubscription? _streamSubscription;
@@ -60,7 +63,10 @@ class BaseWebSocketService {
   }
 
   Future<void> _connect() async {
-    if (_url == null || _url!.isEmpty) return;
+    if (_url == null || _url!.isEmpty) {
+      _onError(WebSocketException.invalidUrl());
+      return;
+    }
 
     try {
       _updateStatus(WebSocketConnectionStatus.connecting);
@@ -103,12 +109,12 @@ class BaseWebSocketService {
 
       _messageController.add(data);
     } catch (e) {
-      debugPrint('❌ Error handling message: $e');
+      debugPrint(' Error handling message: $e');
     }
   }
 
   void _onError(dynamic error) {
-    debugPrint('❌ WebSocket error: $error');
+    ErrorHandler.handleWebSocketError(error);
     _updateStatus(WebSocketConnectionStatus.error);
     _streamSubscription?.cancel();
     _streamSubscription = null;
@@ -138,11 +144,16 @@ class BaseWebSocketService {
   }
 
   void sendRaw(String message) {
-    if (!isConnected || _channel == null) return;
+    if (!isConnected || _channel == null) {
+      _onError(WebSocketException.sendFailed(
+        originalError: 'Not connected to WebSocket',
+      ));
+      return;
+    }
     try {
       _channel!.sink.add(message);
     } catch (e) {
-      debugPrint('❌ Error sending message: $e');
+      ErrorHandler.handleWebSocketError(e);
     }
   }
 
@@ -154,7 +165,7 @@ class BaseWebSocketService {
       await _streamSubscription?.cancel();
       await _channel?.sink.close(1000, 'Normal closure');
     } catch (e) {
-      debugPrint('❌ Error closing WebSocket: $e');
+      debugPrint('Error closing WebSocket: $e');
     }
 
     _channel = null;
