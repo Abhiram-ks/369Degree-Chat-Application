@@ -26,19 +26,19 @@ Testing Source: https://docs.flutter.dev/cookbook/testing
 
 # Data Flow : 
 
-                   PRESENTATION LAYER    (UI Components, BLoC/Cubit, Pages, Widgets)                
+                   PRESENTATION LAYER  
+          (UI Components, BLoC/Cubit, Pages, Widgets)                
                            │
                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      DOMAIN LAYER                           │
-│  (Entities, UseCases, Repository Interfaces)                │
-└──────────────────────────┬──────────────────────────────────┘
+                           
+                     DOMAIN LAYER                           
+    (Entities, UseCases, Repository Interfaces)                
                            │
                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│                       DATA LAYER                            │
-│  (Models, DataSources, Repository Implementations)          │
-└─────────────────────────────────────────────────────────────┘
+                           
+                       DATA LAYER                            
+    (Models, DataSources, Repository Implementations)          
+
            │                  │                    │
            ↓                  ↓                    ↓
     [Remote API]          [WebSocket]          [Local DB]
