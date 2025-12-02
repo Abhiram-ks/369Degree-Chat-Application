@@ -1,3 +1,6 @@
+
+![image alt](https://github.com/Abhiram-ks/369Degree-Chat-Application/blob/e45a629cf77610b370bcc9933f61547ce7205962/369degreeDetailview.png)
+
 # 369Degree : Webchat Application
 # About project : 
 A fully featured real-time chat application built with Flutter, following Clean Architecture and SOLID principles. It integrates REST API, WebSocket communication, SQL database storage, and optimized image caching. The app includes real-time chat windows, dynamic chat tails, user management, message bubbles, live socket connection indicators (connect/disconnect), and typing indicators. Comprehensive Unit, Widget, and Integration tests ensure reliability, scalability, and maintainability.
@@ -45,6 +48,7 @@ Testing Source: https://docs.flutter.dev/cookbook/testing
 
 # Tools & Technologies : 
 Flutter, Dart, Clean Architecture, SOLID Principles, BLoC/Cubit State Management, Dio (HTTP Client), WebSocket (Echo Server / Event-based Communication), REST API (Mocki.io), Local Database (SQFlite/SQLite), Image Caching, and Unit, Widget, and Integration Testing.
+
 
 
 
