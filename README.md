@@ -1,60 +1,26 @@
 # 369Degree : Webchat Application
-# About project: 
+# About project : 
 A fully featured real-time chat application built with Flutter, following Clean Architecture and SOLID principles. It integrates REST API, WebSocket communication, SQL database storage, and optimized image caching. The app includes real-time chat windows, dynamic chat tails, user management, message bubbles, live socket connection indicators (connect/disconnect), and typing indicators. Comprehensive Unit, Widget, and Integration tests ensure reliability, scalability, and maintainability.
 
-# Project Overview
+# Project Overview : 
 This project is a fully featured real-time chat application designed with a strong focus on user engagement, scalability, and stable WebSocket communication. It provides a dynamic chatting experience powered by REST APIs, WebSocket events, and robust local data handling. The architecture prioritizes maintainability, reliability, and performance, ensuring smooth real-time updates and offline support.
 
-# Key Features
+# Key Features : 
 - Stable WebSocket communication with real-time message updates
 - Dynamic chat windows & interactive chat tails
 - REST API integration for user and data management
 API Source: https://mocki.io/fake-json-api
+- Local SQL database to store user data, enabling instant access and offline usage
+- Optimized image caching to improve performance and reduce network load
+- Automatic offline asset handling with proper storage permissions
+- Real-time socket indicators (connected/disconnected)
+- Typing indicators for improved user experience
+- Message bubbles with clean UI/UX design
+- WebSocket Events Using the WebSocket echo server
+WebSocket Source: https://websocket.org/
+- for real-time event handling, message streaming, and connectivity detection.
+- Testing follows official Flutter guidelines:
+Testing Source: https://docs.flutter.dev/cookbook/testing
+- Unit Tests / Widget Tests / Integration Tests
+- Coverage for API calls, database logic, BLoC states, and UI behavior
 
-Local SQL database to store user data, enabling instant access and offline usage
-
-Optimized image caching to improve performance and reduce network load
-
-Automatic offline asset handling with proper storage permissions
-
-Real-time socket indicators (connected/disconnected)
-
-Typing indicators for improved user experience
-
-Message bubbles with clean UI/UX design
-
-🔸 Architecture
-
-Built using:
-
-Clean Architecture
-
-Lean Architecture Principles
-
-Separation of Concerns (SoC)
-
-BLoC State Management
-
-This ensures modularity, easier testing, and long-term maintainability.
-
-🔸 WebSocket Events
-
-Using the WebSocket echo server:
-https://websocket.org/
-
-for real-time event handling, message streaming, and connectivity detection.
-
-🔸 Testing
-
-Testing follows official Flutter guidelines:
-https://docs.flutter.dev/cookbook/testing
-
-Includes:
-
-Unit Tests
-
-Widget Tests
-
-Integration Tests
-
-Coverage for API calls, database logic, BLoC states, and UI behavior
