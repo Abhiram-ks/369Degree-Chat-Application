@@ -42,6 +42,7 @@ dependencies:
   dio: ^5.9.0
   sqflite: ^2.4.2
   path: ^1.9.1
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
@@ -61,7 +62,7 @@ dev_dependencies:
     sdk: flutter
   sqflite_common_ffi: ^2.3.0+4  # desktop/VM testing
   flutter_launcher_icons: ^0.14.4
-  
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -79,11 +80,12 @@ flutter:
   assets:
     - assets/
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/app_logo.png"
-  adaptive_icon_foreground: "assets/app_logo.png"
+  image_path: "assets/app_logo.jpg"
+  adaptive_icon_foreground: "assets/app_logo.jpg"
+  adaptive_icon_background: "#ffffff"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

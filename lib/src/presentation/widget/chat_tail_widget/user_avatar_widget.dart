@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:webchat/core/constant/app_constants.dart';
 import 'package:webchat/core/constant/app_image.dart';
 import 'package:webchat/core/di/di.dart';
@@ -29,20 +30,20 @@ class UserAvatarWidget extends StatelessWidget {
           if (state is GetSingleUserSuccess) {
             return GestureDetector(
               onTap: onTap,
-              child: CircleAvatar(
-                radius: radius ?? 20,
-                backgroundImage: state.user.avatarUrl.isNotEmpty
-                    ? NetworkImage(state.user.avatarUrl)
-                    : const AssetImage(AppImage.defaultImage) as ImageProvider,
-                onBackgroundImageError: state.user.avatarUrl.isNotEmpty
-                      ? (exception, stackTrace) {
-                          debugPrint('Image loading error: $exception');
-                      }
-                    : null,
-                child: state.user.avatarUrl.isEmpty
-                    ? _buildDefaultAvatarContent()
-                    : null,
-              ),
+              child: state.user.avatarUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: state.user.avatarUrl,
+                      imageBuilder: (context, imageProvider) => CircleAvatar(
+                        radius: radius ?? 20,
+                        backgroundImage: imageProvider,
+                      ),
+                      placeholder: (context, url) => CircleAvatar(
+                        radius: radius ?? 20,
+                        child: const CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      errorWidget: (context, url, error) => _buildDefaultAvatar(),
+                    )
+                  : _buildDefaultAvatar(),
             );
           } else if (state is GetSingleUserLoading) {
             return CircleAvatar(
@@ -69,11 +70,5 @@ class UserAvatarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultAvatarContent() {
-    return const Icon(
-      Icons.person,
-      size: 20,
-    );
-  }
 }
 
