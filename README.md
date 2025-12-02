@@ -38,12 +38,13 @@ Testing Source: https://docs.flutter.dev/cookbook/testing
                            
                        DATA LAYER                            
     (Models, DataSources, Repository Implementations)          
-
+            /                 |                   \
            │                  │                    │
            ↓                  ↓                    ↓
     [Remote API]          [WebSocket]          [Local DB]
 
 # Tools & Technologies : 
 Flutter, Dart, Clean Architecture, SOLID Principles, BLoC/Cubit State Management, Dio (HTTP Client), WebSocket (Echo Server / Event-based Communication), REST API (Mocki.io), Local Database (SQFlite/SQLite), Image Caching, and Unit, Widget, and Integration Testing.
+
 
 
