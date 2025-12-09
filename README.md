@@ -52,3 +52,4 @@ Flutter, Dart, Clean Architecture, SOLID Principles, BLoC/Cubit State Management
 
 
 
+
